@@ -1,14 +1,16 @@
-# Replication Package
-
-## "Zero fare, cleaner air? The causal effect of free public transportation on transport emissions"
+# Replication Package for
 
 ---
 
-## Citation
+**"Zero fare, cleaner air? The causal effect of free public transportation on transport emissions"**
 
-> Eibinger, T. & Fernando, S. (2026). Zero fare, cleaner air? 
-The causal effect of free public transportation on transport emissions.
-*Environmental and Resource Economics*. 
+---
+
+### Authors
+
+**Tobias Eibinger**, University of Graz, AT
+
+**Sachintha Fernando**, Martin Luther University Halle-Wittenberg, DE
 
 ---
 
@@ -125,7 +127,7 @@ is needed. Each script populates `60_results/`.
 
 ---
 
-## Contact
+### Contact
 
 For questions, comments, and feedback, please contact:
 
@@ -139,5 +141,11 @@ Martin Luther University Halle-Wittenberg,
 [sachintha.fernando@wiwi.uni-halle.de]
 
 ---
+
+### License
+
+Unless otherwise noted, materials in this replication package are licensed under CC BY 4.0.
+
+Third-party data and source materials remain subject to their original licenses and terms of use.
 
 *Last updated: [April, 2026]*

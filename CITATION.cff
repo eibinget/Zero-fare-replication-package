@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "Recommended citation for the replication package"
+type: software
+title: "Replication package for: Zero fare, cleaner air? The causal effect of free public transportation on transport emissions"
+authors:
+  - family-names: "Eibinger"
+    given-names: "Tobias"
+    affiliation: "University of Graz"
+    orcid: "https://orcid.org/0000-0003-4144-265X"
+  - family-names: "Fernando"
+    given-names: "Sachintha"
+    affiliation: "Martin Luther University Halle-Wittenberg"
+    orcid: "https://orcid.org/0009-0009-2465-8521"
+repository-code: "https://github.com/eibinget/Zero-fare-replication-package"
+url: "https://github.com/eibinget/Zero-fare-replication-package"
+version: "v1.0.0"
+date-released: 2026-04-19
+abstract: >
+  Replication package for "Zero fare, cleaner air? The causal effect of free public transportation on transport emissions".
+  This repository contains the code and selected data objects necessary to reproduce the paper's empirical results.
+keywords:
+  - replication package
+  - public transport
+  - zero-fare public transport
+  - environmental economics
+  - causal inference
+license: "CC-BY-4.0"
