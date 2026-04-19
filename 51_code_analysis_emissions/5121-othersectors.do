@@ -1,0 +1,360 @@
+/* ************************************************************************* * 
+*   Creator: Tobias Eibinger and Sachintha Fernando
+*   Project: Zero Fare
+*   Running the analysis at NUTS2level w placebo inference for other sectors
+*   Date: 2026-04-05
+** ************************************************************************* */ 
+
+
+* Other Sectors including the COVID year 2020
+*-------------------------------------------------------
+
+
+*-------------------------------------------------------
+* Buildings
+*-------------------------------------------------------
+
+clear
+use "$final/sdid-dataset-urban"
+
+sdid lbuildcap NUTS2code year treatment, vce(placebo) graph g1on reps(500) seed(130423)
+
+
+*calculate equation 9 in Clarke et al. (2024)
+matrix lambda = e(lambda)[1..4,1] //save lambda weight (define 1..X as number of pre-treatment periods)
+matrix yco = e(series)[1..4,2] //control baseline (define 1..X as number of pre-treatment periods)
+matrix ytr = e(series)[1..4,3] //treated baseline (define 1..X as number of pre-treatment periods)
+matrix aux = lambda'*(ytr - yco) //calculate the pre-treatment mean
+scalar meanpre_o = aux[1,1]
+matrix difference = e(difference)[1..7,1..2] // Store Ytr-Yco (define 1..X as number of periods)
+svmat difference
+ren (difference1 difference2) (time d)
+replace d = d - meanpre_o // Calculate vector in (8)
+
+*check differences in yearly point estimates and baseline
+matlist e(difference)
+di meanpre_o
+
+
+*---------------------------------
+* run ES
+*---------------------------------
+
+*drop treated unit
+drop if ccode=="LU"
+
+
+*reset ids
+drop id
+egen id=group(NUTS2code)
+
+*get max id
+qui sum(id)
+scalar max_id = r(max)
+display max_id
+
+set seed 130423
+*bootstrap w placebo inference
+local b = 1
+local B = 500 // num of reps
+while `b' <= `B' {
+preserve
+
+
+*randomly pick placebo units
+local placebo_unit = runiformint(1,max_id)
+
+*assign placebo treatments
+drop treatment
+gen treatment = (year>2019 & id==`placebo_unit')
+
+*run sdid
+qui sdid lbuildcap NUTS2code year treatment, vce(noinference) graph
+
+*collect quantities from above
+matrix lambda_b = e(lambda)[1..4,1] //save lambda weight (define 1..4 as number of pre-treatment periods)
+matrix yco_b = e(series)[1..4,2] //control baseline (define 1..X as number of pre-treatment periods)
+matrix ytr_b = e(series)[1..4,3] //treated baseline (define 1..X as number of pre-treatment periods)
+matrix aux_b = lambda_b'*(ytr_b - yco_b) //calculate the pre-treatment mean
+matrix meanpre_b = J(7,1,aux_b[1,1]) // (define 1..X as number of periods)
+
+*collect equation 9 values
+matrix d`b' = e(difference)[1..7,2] - meanpre_b // (define 1..X as number of periods)
+
+*update loop
+local ++b
+
+restore
+}
+
+preserve
+keep time d
+keep if time!=.
+
+local B = 500
+forvalues b = 1/`B' {
+svmat d`b'
+}
+
+egen rsd = rowsd(d11 - d5001) //calculate standard deviation of this difference (specifiy d11-dXX1, where XX is num. of reps)
+gen LCI = d + invnormal(0.025)*rsd //lower bounds on bootstrap CIs
+gen UCI = d + invnormal(0.975)*rsd //upper bounds on bootstrap CIs
+*generate plot
+
+tw rarea UCI LCI time, color(gray%30) || scatter d time, color(black) m(d) title("NUTS2-Annual") xtitle("") ytitle("") xlab(2016(1)2023, angle(45)) xline(2019, lc(black) lp(solid)) yline(0, lc(black) lp(shortdash)) scheme(sj) legend(off) plotregion(fcolor(white)) graphregion(fcolor(white))
+
+save "$final/es_sdid_buildings.dta", replace
+
+restore
+
+
+
+*-------------------------------------------------------
+* All sectors
+*-------------------------------------------------------
+
+clear
+use "$final/sdid-dataset-urban"
+
+sdid lallseccap NUTS2code year treatment, vce(placebo) graph g1on reps(500) seed(130423)
+
+
+*calculate equation 9 in Clarke et al. (2024)
+matrix lambda = e(lambda)[1..4,1] //save lambda weight (define 1..X as number of pre-treatment periods)
+matrix yco = e(series)[1..4,2] //control baseline (define 1..X as number of pre-treatment periods)
+matrix ytr = e(series)[1..4,3] //treated baseline (define 1..X as number of pre-treatment periods)
+matrix aux = lambda'*(ytr - yco) //calculate the pre-treatment mean
+scalar meanpre_o = aux[1,1]
+matrix difference = e(difference)[1..7,1..2] // Store Ytr-Yco (define 1..X as number of periods)
+svmat difference
+ren (difference1 difference2) (time d)
+replace d = d - meanpre_o // Calculate vector in (8)
+
+*check differences in yearly point estimates and baseline
+matlist e(difference)
+di meanpre_o
+
+
+*---------------------------------
+* run ES
+*---------------------------------
+
+*drop treated unit
+drop if ccode=="LU"
+
+
+*reset ids
+drop id
+egen id=group(NUTS2code)
+
+*get max id
+qui sum(id)
+scalar max_id = r(max)
+display max_id
+
+set seed 130423
+*bootstrap w placebo inference
+local b = 1
+local B = 500 // num of reps
+while `b' <= `B' {
+preserve
+
+
+*randomly pick placebo units
+local placebo_unit = runiformint(1,max_id)
+
+*assign placebo treatments
+drop treatment
+gen treatment = (year>2019 & id==`placebo_unit')
+
+*run sdid
+qui sdid lallseccap NUTS2code year treatment, vce(noinference) graph
+
+*collect quantities from above
+matrix lambda_b = e(lambda)[1..4,1] //save lambda weight (define 1..4 as number of pre-treatment periods)
+matrix yco_b = e(series)[1..4,2] //control baseline (define 1..X as number of pre-treatment periods)
+matrix ytr_b = e(series)[1..4,3] //treated baseline (define 1..X as number of pre-treatment periods)
+matrix aux_b = lambda_b'*(ytr_b - yco_b) //calculate the pre-treatment mean
+matrix meanpre_b = J(7,1,aux_b[1,1]) // (define 1..X as number of periods)
+
+*collect equation 9 values
+matrix d`b' = e(difference)[1..7,2] - meanpre_b // (define 1..X as number of periods)
+
+*update loop
+local ++b
+
+restore
+}
+
+preserve
+keep time d
+keep if time!=.
+
+local B = 500
+forvalues b = 1/`B' {
+svmat d`b'
+}
+
+egen rsd = rowsd(d11 - d5001) //calculate standard deviation of this difference (specifiy d11-dXX1, where XX is num. of reps)
+gen LCI = d + invnormal(0.025)*rsd //lower bounds on bootstrap CIs
+gen UCI = d + invnormal(0.975)*rsd //upper bounds on bootstrap CIs
+*generate plot
+
+tw rarea UCI LCI time, color(gray%30) || scatter d time, color(black) m(d) title("NUTS2-Annual") xtitle("") ytitle("") xlab(2016(1)2023, angle(45)) xline(2019, lc(black) lp(solid)) yline(0, lc(black) lp(shortdash)) scheme(sj) legend(off) plotregion(fcolor(white)) graphregion(fcolor(white))
+
+save "$final/es_sdid_allsectors.dta", replace
+
+restore
+
+
+
+*-------------------------------------------------------
+* All sectors no raod
+*-------------------------------------------------------
+
+clear
+use "$final/sdid-dataset-urban"
+
+sdid lallsecnoroadcap NUTS2code year treatment, vce(placebo) graph g1on reps(500) seed(130423)
+
+
+*calculate equation 9 in Clarke et al. (2024)
+matrix lambda = e(lambda)[1..4,1] //save lambda weight (define 1..X as number of pre-treatment periods)
+matrix yco = e(series)[1..4,2] //control baseline (define 1..X as number of pre-treatment periods)
+matrix ytr = e(series)[1..4,3] //treated baseline (define 1..X as number of pre-treatment periods)
+matrix aux = lambda'*(ytr - yco) //calculate the pre-treatment mean
+scalar meanpre_o = aux[1,1]
+matrix difference = e(difference)[1..7,1..2] // Store Ytr-Yco (define 1..X as number of periods)
+svmat difference
+ren (difference1 difference2) (time d)
+replace d = d - meanpre_o // Calculate vector in (8)
+
+*check differences in yearly point estimates and baseline
+matlist e(difference)
+di meanpre_o
+
+
+*---------------------------------
+* run ES
+*---------------------------------
+
+*drop treated unit
+drop if ccode=="LU"
+
+
+*reset ids
+drop id
+egen id=group(NUTS2code)
+
+*get max id
+qui sum(id)
+scalar max_id = r(max)
+display max_id
+
+set seed 130423
+*bootstrap w placebo inference
+local b = 1
+local B = 500 // num of reps
+while `b' <= `B' {
+preserve
+
+
+*randomly pick placebo units
+local placebo_unit = runiformint(1,max_id)
+
+*assign placebo treatments
+drop treatment
+gen treatment = (year>2019 & id==`placebo_unit')
+
+*run sdid
+qui sdid lallsecnoroadcap NUTS2code year treatment, vce(noinference) graph
+
+*collect quantities from above
+matrix lambda_b = e(lambda)[1..4,1] //save lambda weight (define 1..4 as number of pre-treatment periods)
+matrix yco_b = e(series)[1..4,2] //control baseline (define 1..X as number of pre-treatment periods)
+matrix ytr_b = e(series)[1..4,3] //treated baseline (define 1..X as number of pre-treatment periods)
+matrix aux_b = lambda_b'*(ytr_b - yco_b) //calculate the pre-treatment mean
+matrix meanpre_b = J(7,1,aux_b[1,1]) // (define 1..X as number of periods)
+
+*collect equation 9 values
+matrix d`b' = e(difference)[1..7,2] - meanpre_b // (define 1..X as number of periods)
+
+*update loop
+local ++b
+
+restore
+}
+
+preserve
+keep time d
+keep if time!=.
+
+local B = 500
+forvalues b = 1/`B' {
+svmat d`b'
+}
+
+egen rsd = rowsd(d11 - d5001) //calculate standard deviation of this difference (specifiy d11-dXX1, where XX is num. of reps)
+gen LCI = d + invnormal(0.025)*rsd //lower bounds on bootstrap CIs
+gen UCI = d + invnormal(0.975)*rsd //upper bounds on bootstrap CIs
+*generate plot
+
+tw rarea UCI LCI time, color(gray%30) || scatter d time, color(black) m(d) title("NUTS2-Annual") xtitle("") ytitle("") xlab(2016(1)2023, angle(45)) xline(2019, lc(black) lp(solid)) yline(0, lc(black) lp(shortdash)) scheme(sj) legend(off) plotregion(fcolor(white)) graphregion(fcolor(white))
+
+save "$final/es_sdid_allsectorsNoroad.dta", replace
+
+restore
+
+
+
+*-------------------------------------------------------
+* Dataset for ES
+*-------------------------------------------------------
+
+**Building with 2020
+use "$final/es_sdid_buildings.dta", clear
+rename d d1
+rename LCI LCI_1
+rename UCI UCI_1
+
+keep time UCI_1 LCI_1 d1
+
+
+preserve 
+**All sectors with 2020
+use "$final/es_sdid_allsectors.dta", clear
+rename d d2
+rename LCI LCI_2
+rename UCI UCI_2
+
+keep time UCI_2 LCI_2 d2
+
+save "$final/temp.dta", replace
+restore
+merge 1:1 time using "$final/temp.dta"
+drop _merge
+
+preserve 
+**All sectors no Road with 2020
+use "$final/es_sdid_allsectorsNoroad.dta", clear
+rename d d3
+rename LCI LCI_3
+rename UCI UCI_3
+
+keep time UCI_3 LCI_3 d3
+
+save "$final/temp.dta", replace
+restore
+merge 1:1 time using "$final/temp.dta"
+drop _merge
+
+
+preserve 
+keep d1 LCI_1 UCI_1 d2 LCI_2 UCI_2 d3 LCI_3 UCI_3  
+save "$final/othersectors_es_att_and_CI.dta", replace
+restore
+
+erase "$final/es_sdid_buildings.dta"
+erase "$final/es_sdid_allsectors.dta"
+erase "$final/es_sdid_allsectorsNoroad.dta"
+erase "$final/temp.dta"

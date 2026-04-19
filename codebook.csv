@@ -1,0 +1,37 @@
+,,,
+Codebook for variables used in replication of:,,,
+"""Zero fare, cleaner air? The causal effect of free public transportation on transport emissions""",,,
+,,,
+,,,
+Variable,Description,Notes,Aggregation
+ccode,2-digit country code,,country
+NUTS2code,4-digit NUTS2 code,2021 classification,NUTS2
+nuts_id,4-digit NUTS2 code,2021 classification,NUTS2
+treatment,Indicator variable,"1: treated, 0: untreated",NUTS2
+lco2cap,Log of CO2 emissions from road transport per capita,IPCC 1A3b; per 1000 inhabitants,NUTS2
+lghgcap,Log of GHG emissions from road transport per capita,IPCC 1A3b; per 1000 inhabitants,NUTS2
+lnoxcap,Log of NOx emissions from road transport per capita,IPCC 1A3b; per 1000 inhabitants,NUTS2
+lbuildcap,Log of emissions from energy use in buildings capita,"IPCC 1A4+1A5+1A3e, per 1000 inhabitants",NUTS2
+lallseccap,Log of CO2 emissions from all sectors per capita,"IPCC TOTALS - All sectors, per 1000 inhabitants",NUTS2
+lallsecnoroadcap,Log of CO2 emissions from all sectors except road transport per capita,"IPCC TOTALS (All sectors) minus IPCC 1A3b, per 1000 inhabitants",NUTS2
+lgdp,Log of real regional gross domestic product (million PPS) per capita,,NUTS2
+acases,Hyperbolic sine of cumulative number of reported confirmed COVID-19 cases per capita,"per 10,000 inhabitants",NUTS2
+stringIndex,OWID COVID-stringency index,"Government Response Stringency Index: composite measure based on 9 response indicators including school closures, workplace closures, and travel bans, rescaled to a value from 0 to 100 (100 = strictest response)",country
+lsome,Log of people sometimes working from home,"sometimes: working at home less than half of the days worked, but a least one hour in a reference period of four weeks preceding the end of the reference week.",NUTS2
+lusual,Log of people usually working from home,usually: working at home half of the days worked in a reference period of four weeks preceding the end of the reference week.,NUTS2
+ei,Energy intentsity,Average CO2 emission per km from new passenger cars,country
+ldiesel_real,Log of real diesel price,yearly average,country
+lsuper_real,Log of real super (petrol) price,yearly average,country
+lload,Log of total goods loaded (t) in the region,,NUTS2
+lrel_diesel,Log of relative diesel price,Relative diesel price: region-specific measure equal to the national average diesel price in the region's country divided by the weighted average diesel price in adjacent regions. Weights reflect the number of adjacent regions in each neighboring country. Larger weights are assigned to countries that account for more adjacent regions.,NUTS2
+cb_inflow75,Indicator variable.,1: if a region is >= 75th percentile of the cross-border commuter inflow distribution (excluding Luxembourg). 0: if below. Cross-border commuter inflow: People with workplace at the NUTS2 region but residency in another country that never work from home.,NUTS2
+intact,Interaction term between lrel_diesel and cb_inflow75,,NUTS2
+lvolume,Log of monthly mean of total daily traffic counts,,NUTS2
+ln_no2_avg,Log of monthly mean of daily mean NO2 emissions,,NUTS2
+mean_prec,Monthly mean precipitation (mm),,NUTS2
+,,,
+,,,
+,,,
+,,,
+,,,
+,,,
