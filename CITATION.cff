@@ -1,7 +1,7 @@
-cff-version: 1.2.0
+cff-version: 1.0.3
 message: "Recommended citation for the replication package"
 type: software
-title: "Replication package for: Zero fare, cleaner air? The causal effect of Luxembourg's free public transportation on transport emissions"
+title: "Replication package for: Zero fare, cleaner air? The causal effect of Luxembourg's free public transportation piolicy on transport emissions"
 authors:
   - family-names: "Eibinger"
     given-names: "Tobias"

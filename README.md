@@ -2,7 +2,7 @@
 ---
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19651609.svg)](https://doi.org/10.5281/zenodo.19651609)
 
-**"Zero fare, cleaner air? The causal effect of Luxembourg's free public transportation on transport emissions"**
+**"Zero fare, cleaner air? The causal effect of Luxembourg's free public transportation policy on transport emissions"**
 
 ---
 

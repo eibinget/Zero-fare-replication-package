@@ -434,12 +434,14 @@ df_percent_change <- as.data.frame(percent_change, xy = TRUE)
 base_plot <- function(data, main = "", fill_palette, limits,
                       border1 = 0.08, border2 = 0.15, interpolate = TRUE) {
   
+  # Use linewidth if available, otherwise fall back to size
   use_linewidth <- utils::packageVersion("ggplot2") >= "3.4.0"
   
   border_args1 <- if (use_linewidth) list(linewidth = border1) else list(size = border1)
   border_args2 <- if (use_linewidth) list(linewidth = border2) else list(size = border2)
   
   ggplot(data) +
+    # Interpolate visually by switching to geom_raster(interpolate=TRUE)
     geom_raster(aes(x = x, y = y, fill = mean), interpolate = interpolate) +
     do.call(geom_sf, c(list(data = LU_vect, fill = NA, color = "black"), border_args1)) +
     do.call(geom_sf, c(list(data = LU,      fill = NA, color = "black"), border_args2)) +
@@ -485,10 +487,15 @@ plot_avg_2016_2019 <- base_plot(
   border1 = 0.03,
   border2 = 1,
   interpolate = TRUE
-)
+) +
+  theme(
+    plot.margin = margin(5.5, 25, 5.5, 5.5),
+    legend.margin = margin(0, 5, 0, 0),
+    legend.box.margin = margin(0, 10, 0, 0)
+  )
 plot_avg_2016_2019 
 
-ggsave(file="../60_results/Fig1b.png", 
+ggsave(file="../60_results/Fig1br2.png", 
        scale=1,
        width = 4,  
        height = 6,
@@ -496,18 +503,26 @@ ggsave(file="../60_results/Fig1b.png",
 )
 
 # Plot the percentage change between the averages
+pal_percent_change <- rev(colorRampPalette(brewer.pal(9, "Reds"))(100))
+limits_percent_change <- c(min(df_percent_change$mean, na.rm=T), 
+                           -18) # to better differentiate local changes
 plot_percent_change <- base_plot(
-  df_percent_change,
+  df_percent_change[df_percent_change$mean<=-18,],
   main = "",
   fill_palette = pal_percent_change,
   limits = limits_percent_change,
   border1 = 0.03,
   border2 = 1,
   interpolate = TRUE
-)
+)  +
+  theme(
+    plot.margin = margin(5.5, 25, 5.5, 5.5),
+    legend.margin = margin(0, 5, 0, 0),
+    legend.box.margin = margin(0, 10, 0, 0)
+  )
 plot_percent_change
 
-ggsave(file="../60_results/Fig1c.png", 
+ggsave(file="../60_results/Fig1cr2.png", 
        scale=1,
        width = 4, 
        height = 6, 
